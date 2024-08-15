@@ -41,7 +41,7 @@ app.post('/calculate',async(req,res)=> {
 
         res.status(200).json({message:`Test Calculation successfully saved: ${num1}+${num2} = ${result}`,result,status:'OK'});
     } catch (error) {
-        res.status(500).json
+        res.status(500).json({ message: "Failed to save calculation", error: error.message });
     }
 })
 
