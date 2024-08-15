@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv  from "dotenv"
-import Test, { studentDetails } from './model.js';
+import {Test,StudentDetails } from './model.js';
 
 dotenv.config();
 const app  = express();
@@ -51,7 +51,7 @@ app.post('/saveStudentDetails',async(req,res)=>{
     const {firstName,lastName,score} = req.body;
     
     try {
-        const studentDetails = new studentDetails({first_name:firstName,last_name:lastName,score:score})
+        const studentDetails = new StudentDetails({first_name:firstName,last_name:lastName,score:score})
         await studentDetails.save();
 
         res.status(200).json({message:`The Student Details was successfully saved: ${firstName} ${lastName} with a score of ${score}`,status:'OK'});
