@@ -12,7 +12,7 @@ const mongoURL = process.env.MONGO_DB_URL;
 app.use(express.json());
 app.use(cors());
 
-mongoose.connect(mongoURL).then(()=>{
+await mongoose.connect(mongoURL).then(()=>{
     console.log('Database connection established')
 }).catch(error => {
     console.log(error)
@@ -41,7 +41,7 @@ app.post('/calculate',async(req,res)=> {
 
         res.status(200).json({message:`Test Calculation successfully saved: ${num1}+${num2} = ${result}`,result,status:'OK'});
     } catch (error) {
-        res.status(500).json({ message: "Failed to save calculation", error: error.message });
+        res.status(500).json({ error: error.message });
     }
 })
 

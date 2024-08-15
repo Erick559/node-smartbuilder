@@ -7,5 +7,5 @@ fetch('https://node-smartbuilder.onrender.com/calculate',{
   body:JSON.stringify(data),
 })
 .then(response=> response.json())
-.then(result => alert(JSON.stringify(result.message)))
+.then(result => alert(JSON.stringify(result.error)))
 .catch(error => alert(error))
