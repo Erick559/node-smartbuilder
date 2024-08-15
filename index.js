@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv  from "dotenv"
-import Test from './model.js';
+import Test, { studentDetails } from './model.js';
 
 dotenv.config();
 const app  = express();
@@ -42,6 +42,19 @@ app.post('/calculate',async(req,res)=> {
         await test.save();
 
         res.status(200).json({message:`Test Calculation successfully saved: ${num1}+${num2} = ${result}`,result,status:'OK'});
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+})
+
+app.post('/saveStudentDetails',async(req,res)=>{
+    const {firstName,lastName,score} = req.body;
+    
+    try {
+        const studentDetails = new studentDetails({first_name:firstName,last_name:lastName,score:score})
+        await studentDetails.save();
+
+        res.status(200).json({message:`The Student Details was successfully saved: ${firstName} ${lastName} with a score of ${score}`,status:'OK'});
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
