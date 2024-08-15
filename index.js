@@ -1,5 +1,5 @@
-const express = require('express');
-const cors = require('cors');
+import express from 'express';
+import cors from 'cors';
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
@@ -25,5 +25,10 @@ app.post('/calculate',(req,res)=> {
 
     res.status(200).json({message:`${num1} + ${num2} = ${result}`,status: 'OK'});
 })
+
+app.post('/getDetails',(req,res)=> {
+    const {name,score} = req.body;
+})
+
 
 app.listen(PORT,()=>console.log(`listening on ${PORT}`));
