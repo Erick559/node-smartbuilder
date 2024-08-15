@@ -12,11 +12,15 @@ const mongoURL = process.env.MONGO_DB_URL;
 app.use(express.json());
 app.use(cors());
 
-await mongoose.connect(mongoURL).then(()=>{
-    console.log('Database connection established')
+mongoose.connect(mongoURL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 50000, // Increase timeout to 50 seconds
+}).then(() => {
+    console.log('Database connection established');
 }).catch(error => {
-    console.log(error)
-})
+    console.log(error);
+});
 
 // A get http request that gets root url and outputs a html output, in this case a paragraph with the text below.
 app.get('/',(req,res)=>res.type('html').send(`<p>Server connection for the custom function</p>`));
