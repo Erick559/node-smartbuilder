@@ -13,8 +13,6 @@ app.use(express.json());
 app.use(cors());
 
 mongoose.connect(mongoURL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
     serverSelectionTimeoutMS: 50000, // Increase timeout to 50 seconds
 }).then(() => {
     console.log('Database connection established');
