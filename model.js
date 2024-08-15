@@ -30,5 +30,5 @@ const StudentDetailsSchema = new mongoose.Schema({
     }
 })
 
-export const studentDetails = mongoose.model('studentDetails',StudentDetailsSchema)
+export const StudentDetails = mongoose.model('studentDetails',StudentDetailsSchema)
 export const Test = mongoose.model('Test',TestSchema)
