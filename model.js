@@ -15,6 +15,20 @@ const TestSchema  = new mongoose.Schema({
     }
 })
 
-const Test = mongoose.model('Test',TestSchema)
+const StudentDetailsSchema = new mongoose.Schema({
+    first_name: {
+        type:String,
+        required: true,
+    },
+    last_name: {
+        type:String,
+        required: true,
+    },
+    score: {
+        type: Number,
+        required: true,
+    }
+})
 
-export default Test
+export const studentDetails = mongoose.model('studentDetails',StudentDetailsSchema)
+export const Test = mongoose.model('Test',TestSchema)
