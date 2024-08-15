@@ -17,11 +17,11 @@ const TestSchema  = new mongoose.Schema({
 
 const StudentDetailsSchema = new mongoose.Schema({
     first_name: {
-        type:String,
+        type:mongoose.Schema.Types.Mixed,
         required: true,
     },
     last_name: {
-        type:String,
+        type:mongoose.Schema.Types.Mixed,
         required: true,
     },
     time: {
