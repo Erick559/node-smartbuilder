@@ -31,9 +31,9 @@ app.get('/ping',(req,res)=> {
 // A post http request that returns the sum of two numbers from the smartbuilder input fields.
 app.post('/calculate',async(req,res)=> {
     const {num1, num2} = req.body;
-    if(typeof(num1) !== 'number' || typeof(num2) !== 'number'){
-        res.status(400).json({message:"Invalid inputs. Number 1 and Number 2 must be numbers"})
-    }
+    // if(typeof(num1) !== 'number' || typeof(num2) !== 'number'){
+    //     res.status(400).json({message:"Invalid inputs. Number 1 and Number 2 must be numbers"})
+    // }
 
     const result = num1 + num2;
 
@@ -47,18 +47,21 @@ app.post('/calculate',async(req,res)=> {
     }
 })
 
-app.post('/saveStudentDetails',async(req,res)=>{
-    const {firstName,lastName,score} = req.body;
-    
+app.post('/saveStudentDetails', async (req, res) => {
+    const { first_name, last_name, score } = req.body;  // Match keys with the client's payload
+
     try {
-        const studentDetails = new StudentDetails({first_name:firstName,last_name:lastName,score:score})
+        const studentDetails = new StudentDetails({ first_name:first_name, last_name:last_name, score });
         await studentDetails.save();
 
-        res.status(200).json({message:`The Student Details was successfully saved: ${firstName} ${lastName} with a score of ${score}`,status:'OK'});
+        res.status(200).json({ 
+            message: `The Student Details were successfully saved: ${first_name} ${last_name} with a score of ${score}`, 
+            status: 'OK' 
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-})
+});
 
 
 app.listen(PORT,()=>console.log(`listening on ${PORT}`));
