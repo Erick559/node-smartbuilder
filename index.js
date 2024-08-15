@@ -43,7 +43,6 @@ app.post('/calculate',async(req,res)=> {
     } catch (error) {
         res.status(500).json
     }
-    res.status(200).json({message:`${num1} + ${num2} = ${result}`,status: 'OK'});
 })
 
 
