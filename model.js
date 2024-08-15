@@ -24,6 +24,10 @@ const StudentDetailsSchema = new mongoose.Schema({
         type:String,
         required: true,
     },
+    time: {
+        type:Date,
+        default:Date.now(),
+    },
     score: {
         type: Number,
         required: true,
