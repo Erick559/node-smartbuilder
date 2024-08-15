@@ -2,15 +2,15 @@ import mongoose from "mongoose";
 
 const TestSchema  = new mongoose.Schema({
     num1: {
-        type:Number,
+        type:String,
         required: true,
     },
     num2: {
-        type:Number,
+        type:String,
         required: true,
     },
     result: {
-        type:Number,
+        type:String,
         required: true,
     }
 })
