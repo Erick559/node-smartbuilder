@@ -7,8 +7,6 @@ const app  = express();
 const PORT = process.env.PORT || 3000;
 const database = getFirestore(firebase);
 
-console.log(database);
-
 app.use(express.json());
 app.use(cors());
 
