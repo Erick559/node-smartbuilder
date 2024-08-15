@@ -38,7 +38,7 @@ app.post('/calculate',async(req,res)=> {
     const result = num1 + num2;
 
     try {
-        const test = new Test({num1:num1,num2:num2,result})
+        const test = new Test({num1:num1,num2:num2,result:result})
         await test.save();
 
         res.status(200).json({message:`Test Calculation successfully saved: ${num1}+${num2} = ${result}`,result,status:'OK'});

@@ -8,6 +8,10 @@ const TestSchema  = new mongoose.Schema({
     num2: {
         type:Number,
         required: true,
+    },
+    result: {
+        type:Number,
+        required: true,
     }
 })
 
