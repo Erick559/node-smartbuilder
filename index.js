@@ -51,7 +51,7 @@ app.post('/saveStudentDetails', async (req, res) => {
     const { first_name, last_name, score } = req.body;  // Match keys with the client's payload
 
     try {
-        const studentDetails = new StudentDetails({ first_name:first_name, last_name:last_name, score });
+        const studentDetails = new StudentDetails({ first_name:first_name.toLowerCase(), last_name:last_name.toLowerCase(), score });
         await studentDetails.save();
 
         res.status(200).json({ 
