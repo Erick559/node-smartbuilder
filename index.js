@@ -63,5 +63,20 @@ app.post('/saveStudentDetails', async (req, res) => {
     }
 });
 
+app.post('/getStudentDetails', async (req,res)=>{
+    const {studentName} = req.body;
+
+    try {
+        const student = await StudentDetails.findOne({first_name:studentName});
+        if (student){
+            res.status(200).json({student:student, message:`${student.first_name} found`})
+        }
+        else {
+            res.status(404).json({message:'Student not found'});
+        } 
+    } catch (error) {
+        res.status(500).json({Error: error})
+    }
+})
 
 app.listen(PORT,()=>console.log(`listening on ${PORT}`));
