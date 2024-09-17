@@ -84,7 +84,6 @@ app.post('/generatePDF', async (req, res) => {
         // Title page
         doc.fontSize(22).text('Bucket List Adventure', { align: 'center' });
         doc.fontSize(14).text('Here are some of your favorite places added to your bucket list!', { align: 'center' });
-        doc.addPage();
 
         const pageWidth = doc.page.width;
         const pageHeight = doc.page.height;
