@@ -77,7 +77,6 @@ app.post('/generatePDF', async (req, res) => {
 
     try {
         const doc = new PDFDocument();
-        doc.info['Title'] = 'Bucket List';
         res.contentType('application/pdf');
 
         doc.pipe(res);
