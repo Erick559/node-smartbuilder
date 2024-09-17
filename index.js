@@ -81,13 +81,15 @@ app.post('/generatePDF', async (req, res) => {
 
         doc.pipe(res);
 
+        // Title page
         doc.fontSize(22).text('Bucket List Adventure', { align: 'center' });
         doc.fontSize(14).text('Here are some of your favorite places added to your bucket list!', { align: 'center' });
-        doc.moveDown().lineWidth(1).moveTo(50, 100).lineTo(550, 100).stroke();
+        doc.addPage();
 
-        const imageWidth = 200;
-        const imageHeight = 200;
-        let x = 50, y = 150;
+        const pageWidth = doc.page.width;
+        const pageHeight = doc.page.height;
+        const imageWidth = pageWidth / 2;
+        const imageHeight = pageHeight / 2;
 
         // Create an array of promises for image processing
         const imagePromises = destinations.map(async ({ img }, index) => {
@@ -95,14 +97,26 @@ app.post('/generatePDF', async (req, res) => {
                 const response = await fetch(img.src);
                 const buffer = await response.arrayBuffer();
                 
-                // Calculate position
-                const col = index % 2;
-                const row = Math.floor(index / 2);
-                x = 50 + col * (imageWidth + 20);
-                y = 150 + row * (imageHeight + 20);
+                // Add a new page for each image
+                if (index > 0) doc.addPage();
+
+                // Calculate position to center the image
+                const x = (pageWidth - imageWidth) / 2;
+                const y = (pageHeight - imageHeight) / 2;
 
                 // Add image to the document
-                doc.image(buffer, x, y, { width: imageWidth, height: imageHeight });
+                doc.image(buffer, x, y, { 
+                    width: imageWidth, 
+                    height: imageHeight, 
+                    align: 'center', 
+                    valign: 'center' 
+                });
+
+                // Add image caption or destination name if available
+                if (img.alt) {
+                    doc.fontSize(14).text(img.alt, 0, y + imageHeight + 20, { align: 'center' });
+                }
+
             } catch (imgError) {
                 console.error('Error processing image:', imgError);
                 // You might want to add a placeholder image or text here
