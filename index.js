@@ -92,6 +92,7 @@ app.post('/generatePDF', async (req, res) => {
 
         // Create an array of promises for image processing
         const imagePromises = destinations.map(async ({ img }, index) => {
+            console.log(img);
             try {
                 const response = await fetch(img.src);
                 const buffer = await response.arrayBuffer();
