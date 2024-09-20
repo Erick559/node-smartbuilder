@@ -200,51 +200,51 @@ app.post('/combine-pdfs', async (req, res) => {
 
         console.log(checkboxStates);
 
-        // const pdfUrls = [
-        //     'https://example.com/pdf1.pdf',
-        //     'https://example.com/pdf2.pdf',
-        //     'https://example.com/pdf3.pdf',
-        //     'https://example.com/pdf4.pdf',
-        //     'https://example.com/pdf5.pdf',
-        //     'https://example.com/pdf6.pdf',
-        //     'https://example.com/pdf7.pdf',
-        //     'https://example.com/pdf8.pdf'
-        // ];
+        const pdfUrls = [
+            'https://example.com/pdf1.pdf',
+            'https://example.com/pdf2.pdf',
+            'https://example.com/pdf3.pdf',
+            'https://example.com/pdf4.pdf',
+            'https://example.com/pdf5.pdf',
+            'https://example.com/pdf6.pdf',
+            'https://example.com/pdf7.pdf',
+            'https://example.com/pdf8.pdf'
+        ];
 
-        // // Validation: Ensure the checkbox states match the number of PDFs
-        // if (!Array.isArray(checkboxStates) || checkboxStates.length !== pdfUrls.length) {
-        //     return res.status(400).send(`Invalid input: checkboxStates should be an array of length ${pdfUrls.length}`);
-        // }
+        // Validation: Ensure the checkbox states match the number of PDFs
+        if (!Array.isArray(checkboxStates) || checkboxStates.length !== pdfUrls.length) {
+            return res.status(400).send(`Invalid input: checkboxStates should be an array of length ${pdfUrls.length}`);
+        }
 
-        // // Create a new PDF document
-        // const mergedPdf = await PDFDocument.create();
+        // Create a new PDF document
+        const mergedPdf = await PDFDocument.create();
 
-        // // Fetch and merge only the PDFs corresponding to checked checkboxes
-        // for (let i = 0; i < pdfUrls.length; i++) {
-        //     if (checkboxStates[i] === 1) { // Only process if the corresponding checkbox is checked
-        //         try {
-        //             const pdfResponse = await fetch(pdfUrls[i]);
-        //             if (!pdfResponse.ok) {
-        //                 throw new Error(`Failed to fetch PDF from ${pdfUrls[i]}`);
-        //             }
-        //             const pdfBuffer = await pdfResponse.arrayBuffer();
+        // Fetch and merge only the PDFs corresponding to checked checkboxes
+        for (let i = 0; i < pdfUrls.length; i++) {
+            if (checkboxStates[i] === 1) { // Only process if the corresponding checkbox is checked
+                try {
+                    const pdfResponse = await fetch(pdfUrls[i]);
+                    if (!pdfResponse.ok) {
+                        throw new Error(`Failed to fetch PDF from ${pdfUrls[i]}`);
+                    }
+                    const pdfBuffer = await pdfResponse.arrayBuffer();
 
-        //             const pdfToMerge = await PDFDocument.load(pdfBuffer);
-        //             const pages = await mergedPdf.copyPages(pdfToMerge, pdfToMerge.getPageIndices());
+                    const pdfToMerge = await PDFDocument.load(pdfBuffer);
+                    const pages = await mergedPdf.copyPages(pdfToMerge, pdfToMerge.getPageIndices());
 
-        //             // Add the pages to the merged PDF
-        //             pages.forEach(page => mergedPdf.addPage(page));
-        //         } catch (error) {
-        //             console.error(`Error processing PDF at ${pdfUrls[i]}:`, error);
-        //         }
-        //     }
-        // }
+                    // Add the pages to the merged PDF
+                    pages.forEach(page => mergedPdf.addPage(page));
+                } catch (error) {
+                    console.error(`Error processing PDF at ${pdfUrls[i]}:`, error);
+                }
+            }
+        }
 
-        // // Finalize and send the merged PDF
-        // const pdfBytes = await mergedPdf.save();
-        // res.setHeader('Content-Type', 'application/pdf');
-        // res.setHeader('Content-Disposition', 'attachment; filename=combined.pdf');
-        // res.send(Buffer.from(pdfBytes));
+        // Finalize and send the merged PDF
+        const pdfBytes = await mergedPdf.save();
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=combined.pdf');
+        res.send(Buffer.from(pdfBytes));
     } catch (error) {
         console.error('Error combining PDFs:', error);
         res.status(500).send('Error combining PDFs');
