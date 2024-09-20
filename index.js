@@ -144,7 +144,7 @@ app.post('/combine-pdfs', async (req, res) => {
             'https://rebelrooster.io/vg/nurnberg/pdf/Nuremberg_v1__03.pdf'
         ]
 
-        if (!Array.isArray(imageSources) || imageSources.length !== pdfUrls.length) {
+        if (!Array.isArray(imageSources)) {
             return res.status(400).send('Invalid input: imageSources should be an array of length 4');
         }
 
@@ -192,4 +192,56 @@ app.post('/combine-pdfs', async (req, res) => {
     }
 });
 
+
+// const PDFDocument = require('pdf-lib').PDFDocument;
+// const fetch = require('node-fetch');
+
+// app.post('/combine-pdfs', async (req, res) => {
+//     try {
+//         const { imageSources } = req.body;
+//         const pdfUrls = [
+//             'https://rebelrooster.io/vg/nurnberg/pdf/Nuremberg_v1__01.pdf',
+//             'https://rebelrooster.io/vg/nurnberg/pdf/Nuremberg_v1__02.pdf',
+//             'https://rebelrooster.io/vg/nurnberg/pdf/Nuremberg_v1__03.pdf'
+//         ];
+
+//         if (!Array.isArray(imageSources) || imageSources.length !== pdfUrls.length) {
+//             return res.status(400).send(`Invalid input: imageSources should be an array of length ${pdfUrls.length}`);
+//         }
+
+//         // Create a new PDF document
+//         const mergedPdf = await PDFDocument.create();
+
+//         // Fetch and merge PDFs
+//         for (let i = 0; i < pdfUrls.length; i++) {
+//             if (imageSources[i]) {
+//                 try {
+//                     const pdfResponse = await fetch(pdfUrls[i]);
+//                     if (!pdfResponse.ok) {
+//                         throw new Error(`Failed to fetch PDF from ${pdfUrls[i]}`);
+//                     }
+//                     const pdfBuffer = await pdfResponse.arrayBuffer();
+
+//                     const pdfToMerge = await PDFDocument.load(pdfBuffer);
+//                     const pages = await mergedPdf.copyPages(pdfToMerge, pdfToMerge.getPageIndices());
+
+//                     // Add the pages to the merged PDF
+//                     pages.forEach(page => mergedPdf.addPage(page));
+//                 } catch (error) {
+//                     console.error(`Error processing PDF at ${pdfUrls[i]}:`, error);
+//                     // You could add a blank page or a message as a fallback in case of an error
+//                 }
+//             }
+//         }
+
+//         // Finalize and send the merged PDF
+//         const pdfBytes = await mergedPdf.save();
+//         res.setHeader('Content-Type', 'application/pdf');
+//         res.setHeader('Content-Disposition', 'attachment; filename=combined_nuremberg.pdf');
+//         res.send(Buffer.from(pdfBytes));
+//     } catch (error) {
+//         console.error('Error combining PDFs:', error);
+//         res.status(500).send('Error combining PDFs');
+//     }
+// });
 app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
