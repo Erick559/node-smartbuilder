@@ -197,10 +197,11 @@ app.post('/generatePDF', async (req, res) => {
 
 app.post('/combine-pdfs', async (req, res) => {
     try {
-        const { checkboxStates } = req.body; // This should be an array of 0s and 1s from the checkboxes
+        const { checkboxStates } = req.body;
 
         console.log(checkboxStates);
 
+        const coverPageUrl = 'https://rebelrooster.io/vg/nurnberg/pdf/Nuremberg_v1__00.pdf';
         const pdfUrls = [
             'https://rebelrooster.io/vg/nurnberg/pdf/Nuremberg_v1__01.pdf',
             'https://rebelrooster.io/vg/nurnberg/pdf/Nuremberg_v1__02.pdf',
@@ -212,17 +213,30 @@ app.post('/combine-pdfs', async (req, res) => {
             'https://rebelrooster.io/vg/nurnberg/pdf/Nuremberg_v1__08.pdf'
         ];
 
-        // Validation: Ensure the checkbox states match the number of PDFs
         if (!Array.isArray(checkboxStates) || checkboxStates.length !== pdfUrls.length) {
             return res.status(400).send(`Invalid input: checkboxStates should be an array of length ${pdfUrls.length}`);
         }
 
-        // Create a new PDF document
         const mergedPdf = await PDFDocument.create();
+
+        // Fetch and add the cover page
+        try {
+            const coverPageResponse = await fetch(coverPageUrl);
+            if (!coverPageResponse.ok) {
+                throw new Error(`Failed to fetch cover page from ${coverPageUrl}`);
+            }
+            const coverPageBuffer = await coverPageResponse.arrayBuffer();
+            const coverPageDoc = await PDFDocument.load(coverPageBuffer);
+            const [coverPage] = await mergedPdf.copyPages(coverPageDoc, [0]);
+            mergedPdf.addPage(coverPage);
+        } catch (error) {
+            console.error('Error processing cover page:', error);
+            return res.status(500).send('Error processing cover page');
+        }
 
         // Fetch and merge only the PDFs corresponding to checked checkboxes
         for (let i = 0; i < pdfUrls.length; i++) {
-            if (checkboxStates[i] === 1) { // Only process if the corresponding checkbox is checked
+            if (checkboxStates[i] === 1) {
                 try {
                     const pdfResponse = await fetch(pdfUrls[i]);
                     if (!pdfResponse.ok) {
