@@ -237,7 +237,7 @@ app.post('/combine-pdfs', async (req, res) => {
             y: (height + textHeight) / 2,
             size: fontSize,
             font: robotoFont,
-            color: rgb(0, 0, 0),
+            color: "black",
         });
 
         // Fetch and merge PDFs
