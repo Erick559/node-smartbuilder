@@ -201,14 +201,14 @@ app.post('/combine-pdfs', async (req, res) => {
         console.log(checkboxStates);
 
         const pdfUrls = [
-            'https://example.com/pdf1.pdf',
-            'https://example.com/pdf2.pdf',
-            'https://example.com/pdf3.pdf',
-            'https://example.com/pdf4.pdf',
-            'https://example.com/pdf5.pdf',
-            'https://example.com/pdf6.pdf',
-            'https://example.com/pdf7.pdf',
-            'https://example.com/pdf8.pdf'
+            'https://rebelrooster.io/vg/nurnberg/pdf/Nuremberg_v1__01.pdf',
+            'https://rebelrooster.io/vg/nurnberg/pdf/Nuremberg_v1__02.pdf',
+            'https://rebelrooster.io/vg/nurnberg/pdf/Nuremberg_v1__03.pdf',
+            'https://rebelrooster.io/vg/nurnberg/pdf/Nuremberg_v1__04.pdf',
+            'https://rebelrooster.io/vg/nurnberg/pdf/Nuremberg_v1__05.pdf',
+            'https://rebelrooster.io/vg/nurnberg/pdf/Nuremberg_v1__06.pdf',
+            'https://rebelrooster.io/vg/nurnberg/pdf/Nuremberg_v1__07.pdf',
+            'https://rebelrooster.io/vg/nurnberg/pdf/Nuremberg_v1__08.pdf'
         ];
 
         // Validation: Ensure the checkbox states match the number of PDFs
