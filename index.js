@@ -265,7 +265,7 @@ app.post('/combine-pdfs', async (req, res) => {
         res.setHeader('Content-Disposition', 'attachment; filename=combined.pdf');
         res.send(Buffer.from(pdfBytes));
     } catch (error) {
-        console.error('Error combining PDFs:', error);
+        console.log('Error combining PDFs:', error);
         res.status(500).send('Error combining PDFs');
     }
 });
