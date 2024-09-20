@@ -134,4 +134,62 @@ app.post('/generatePDF', async (req, res) => {
     }
 });
 
+
+app.post('/combine-pdfs', async (req, res) => {
+    try {
+        const { imageSources } = req.body;
+        const pdfUrls = [
+            'https://rebelrooster.io/vg/nurnberg/pdf/Nuremberg_v1__01.pdf',
+            'https://rebelrooster.io/vg/nurnberg/pdf/Nuremberg_v1__02.pdf',
+            'https://rebelrooster.io/vg/nurnberg/pdf/Nuremberg_v1__03.pdf'
+        ]
+
+        if (!Array.isArray(imageSources) || imageSources.length !== pdfUrls.length) {
+            return res.status(400).send('Invalid input: imageSources should be an array of length 4');
+        }
+
+        // Create a new PDF document
+        const doc = new PDFDocument();
+
+        // Set up the response
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=combined_nuremberg.pdf');
+
+        // Pipe the PDF document to the response
+        doc.pipe(res);
+
+        // Combine PDFs conditionally
+        for (let i = 0; i < pdfUrls.length; i++) {
+            if (imageSources[i]) {
+                try {
+                    // Fetch the PDF from the URL
+                    const pdfResponse = await fetch(pdfUrls[i]);
+                    if (!pdfResponse.ok) {
+                        throw new Error(`Failed to fetch PDF from ${pdfUrls[i]}`);
+                    }
+                    const pdfBuffer = await pdfResponse.buffer();
+
+                    // Add the PDF page to the document
+                    doc.addPage().image(pdfBuffer, 0, 0, {fit: [doc.page.width, doc.page.height]});
+
+                    // If it's not the last page and there's another image source coming up, add a new page
+                    if (i < pdfUrls.length - 1 && imageSources[i + 1]) {
+                        doc.addPage();
+                    }
+                } catch (error) {
+                    console.error(`Error processing PDF at ${pdfUrls[i]}:`, error);
+                    // Optionally, you can add a blank page or an error message here
+                }
+            }
+        }
+
+        // Finalize the PDF
+        doc.end();
+
+    } catch (error) {
+        console.error('Error combining PDFs:', error);
+        res.status(500).send('Error combining PDFs');
+    }
+});
+
 app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
