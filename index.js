@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import { Test, StudentDetails } from './model.js';
 import { PDFDocument } from 'pdf-lib'
 import fetch from 'node-fetch';
+import fontkit from '@pdf-lib/fontkit';
 
 dotenv.config();
 const app = express();
@@ -196,7 +197,7 @@ app.post('/generatePDF', async (req, res) => {
 
 app.post('/combine-pdfs', async (req, res) => {
     try {
-        const { checkboxStates } = req.body; // This should be an array of 0s and 1s from the checkboxes
+        const { checkboxStates } = req.body;
 
         console.log(checkboxStates);
 
@@ -211,17 +212,37 @@ app.post('/combine-pdfs', async (req, res) => {
             'https://rebelrooster.io/vg/nurnberg/pdf/Nuremberg_v1__08.pdf'
         ];
 
-        // Validation: Ensure the checkbox states match the number of PDFs
         if (!Array.isArray(checkboxStates) || checkboxStates.length !== pdfUrls.length) {
             return res.status(400).send(`Invalid input: checkboxStates should be an array of length ${pdfUrls.length}`);
         }
 
-        // Create a new PDF document
         const mergedPdf = await PDFDocument.create();
 
-        // Fetch and merge only the PDFs corresponding to checked checkboxes
+        // Register fontkit and embed Roboto font
+        mergedPdf.registerFontkit(fontkit);
+        const fontUrl = 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf';
+        const fontBytes = await fetch(fontUrl).then(res => res.arrayBuffer());
+        const robotoFont = await mergedPdf.embedFont(fontBytes);
+
+        // Create cover page
+        const coverPage = mergedPdf.addPage();
+        const { width, height } = coverPage.getSize();
+        const fontSize = 24;
+        const text = "This is your Nuremberg Bucket List";
+        const textWidth = robotoFont.widthOfTextAtSize(text, fontSize);
+        const textHeight = robotoFont.heightAtSize(fontSize);
+
+        coverPage.drawText(text, {
+            x: (width - textWidth) / 2,
+            y: (height + textHeight) / 2,
+            size: fontSize,
+            font: robotoFont,
+            color: rgb(0, 0, 0),
+        });
+
+        // Fetch and merge PDFs
         for (let i = 0; i < pdfUrls.length; i++) {
-            if (checkboxStates[i] === 1) { // Only process if the corresponding checkbox is checked
+            if (checkboxStates[i] === 1) {
                 try {
                     const pdfResponse = await fetch(pdfUrls[i]);
                     if (!pdfResponse.ok) {
@@ -232,7 +253,6 @@ app.post('/combine-pdfs', async (req, res) => {
                     const pdfToMerge = await PDFDocument.load(pdfBuffer);
                     const pages = await mergedPdf.copyPages(pdfToMerge, pdfToMerge.getPageIndices());
 
-                    // Add the pages to the merged PDF
                     pages.forEach(page => mergedPdf.addPage(page));
                 } catch (error) {
                     console.error(`Error processing PDF at ${pdfUrls[i]}:`, error);
@@ -240,7 +260,6 @@ app.post('/combine-pdfs', async (req, res) => {
             }
         }
 
-        // Finalize and send the merged PDF
         const pdfBytes = await mergedPdf.save();
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', 'attachment; filename=combined.pdf');
