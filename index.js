@@ -198,7 +198,7 @@ app.post('/combine-pdfs', async (req, res) => {
     try {
         const { checkboxStates } = req.body; // This should be an array of 0s and 1s from the checkboxes
 
-        alert(checkboxStates);
+        console.log(checkboxStates);
 
         // const pdfUrls = [
         //     'https://example.com/pdf1.pdf',
