@@ -3,7 +3,6 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from "dotenv";
 import { Test, StudentDetails } from './model.js';
-import PDFDocument from 'pdfkit';
 import { PDFDocument } from 'pdf-lib'
 import fetch from 'node-fetch';
 
