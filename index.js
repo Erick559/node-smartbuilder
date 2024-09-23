@@ -13,11 +13,7 @@ const PORT = process.env.PORT || 3000;
 const mongoURL = process.env.MONGO_DB_URL;
 
 app.use(express.json({ limit: '50mb' }));
-app.use(cors({
-    origin: 'https://rebelrooster.io',
-    methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  }));
+app.use(cors());
 
 mongoose.connect(mongoURL, {
     serverSelectionTimeoutMS: 50000,
