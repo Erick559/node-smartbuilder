@@ -27,6 +27,12 @@ mongoose.connect(mongoURL, {
 
 app.get('/', (req, res) => res.type('html').send(`<p>Server connection for the custom function</p>`));
 
+app.post('/ping', (req,res) => {
+    const ping = req.body;
+
+    console.log(ping);
+})
+
 app.post('/saveStudentDetails', async (req, res) => {
     const { first_name, last_name, score } = req.body;
 
