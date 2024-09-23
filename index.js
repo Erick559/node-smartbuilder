@@ -30,7 +30,7 @@ app.get('/', (req, res) => res.type('html').send(`<p>Server connection for the c
 app.post('/ping', (req,res) => {
     const ping = req.body;
 
-    console.log(ping);
+    res.status(200).send(`Connection established:${ping}`);
 })
 
 app.post('/saveStudentDetails', async (req, res) => {
