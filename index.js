@@ -272,4 +272,76 @@ app.post('/combine-pdfs', async (req, res) => {
     }
 });
 
+
+app.post('/combine-pdfs/germany', async (req, res) => {
+    try {
+        const { checkboxStates } = req.body;
+
+        console.log(checkboxStates);
+
+        const coverPageUrl = 'https://rebelrooster.io/vg/germany/_pdf/Germany_v1_01_compressed.pdf';
+        const pdfUrls = [
+            'https://rebelrooster.io/vg/germany/_pdf/Germany_v1_02_compressed.pdf',
+            'https://rebelrooster.io/vg/germany/_pdf/Germany_v1_03_compressed.pdf',
+            'https://rebelrooster.io/vg/germany/_pdf/Germany_v1_04_compressed.pdf',
+            'https://rebelrooster.io/vg/germany/_pdf/Germany_v1_05_compressed.pdf',
+            'https://rebelrooster.io/vg/germany/_pdf/Germany_v1_06_compressed.pdf',
+            'https://rebelrooster.io/vg/germany/_pdf/Germany_v1_07_compressed.pdf',
+            'https://rebelrooster.io/vg/germany/_pdf/Germany_v1_08_compressed.pdf',
+        ];
+
+        if (!Array.isArray(checkboxStates) || checkboxStates.length !== pdfUrls.length) {
+            return res.status(400).send(`Invalid input: checkboxStates should be an array of length ${pdfUrls.length}`);
+        }
+
+        const mergedPdf = await PDFDocument.create();
+
+        // Fetch and add the cover page
+        try {
+            const coverPageResponse = await fetch(coverPageUrl);
+            if (!coverPageResponse.ok) {
+                throw new Error(`Failed to fetch cover page from ${coverPageUrl}`);
+            }
+            const coverPageBuffer = await coverPageResponse.arrayBuffer();
+            const coverPageDoc = await PDFDocument.load(coverPageBuffer);
+            const [coverPage] = await mergedPdf.copyPages(coverPageDoc, [0]);
+            mergedPdf.addPage(coverPage);
+        } catch (error) {
+            console.error('Error processing cover page:', error);
+            return res.status(500).send('Error processing cover page');
+        }
+
+        // Fetch and merge only the PDFs corresponding to checked checkboxes
+        for (let i = 0; i < pdfUrls.length; i++) {
+            if (checkboxStates[i] === 1) {
+                try {
+                    const pdfResponse = await fetch(pdfUrls[i]);
+                    if (!pdfResponse.ok) {
+                        throw new Error(`Failed to fetch PDF from ${pdfUrls[i]}`);
+                    }
+                    const pdfBuffer = await pdfResponse.arrayBuffer();
+
+                    const pdfToMerge = await PDFDocument.load(pdfBuffer);
+                    const pages = await mergedPdf.copyPages(pdfToMerge, pdfToMerge.getPageIndices());
+
+                    // Add the pages to the merged PDF
+                    pages.forEach(page => mergedPdf.addPage(page));
+                } catch (error) {
+                    console.error(`Error processing PDF at ${pdfUrls[i]}:`, error);
+                }
+            }
+        }
+
+        // Finalize and send the merged PDF
+        const pdfBytes = await mergedPdf.save();
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=combined.pdf');
+        res.send(Buffer.from(pdfBytes));
+    } catch (error) {
+        console.error('Error combining PDFs:', error);
+        res.status(500).send('Error combining PDFs');
+    }
+});
+
+
 app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
