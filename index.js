@@ -311,7 +311,7 @@ app.post('/combine-pdfsv2', async (req, res) => {
         
         for (const url of pdfUrls) {
             try {
-              const pdfBuffer = await fetchPdf(url);
+              const pdfBuffer = await fetch(url);
               const pdfToMerge = await PDFDocument.load(pdfBuffer);
               const pages = await mergedPdf.copyPages(pdfToMerge, pdfToMerge.getPageIndices());
               pages.forEach(page => mergedPdf.addPage(page));
