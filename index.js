@@ -284,5 +284,53 @@ app.post('/combine-pdfs/germany', async (req, res) => {
     }
 });
 
+app.post('/combine-pdfsv2', async (req, res) => {
+    const {pdfUrls, coverPageUrl} = req.body;
+
+    if (!Array.isArray(pdfUrls) || !coverPageUrl) {
+        return res.status(400).json({ error: "Invalid input: pdfUrls should be an array and coverPageUrl should be a string" });
+    }
+
+    try {
+        const mergedPdf = await PDFDocument.create();
+
+        // Fetch and add the cover page
+        try {
+            const coverPageResponse = await fetch(coverPageUrl);
+            if (!coverPageResponse.ok) {
+                throw new Error(`Failed to fetch cover page from ${coverPageUrl}`);
+            }
+            const coverPageBuffer = await coverPageResponse.arrayBuffer();
+            const coverPageDoc = await PDFDocument.load(coverPageBuffer);
+            const [coverPage] = await mergedPdf.copyPages(coverPageDoc, [0]);
+            mergedPdf.addPage(coverPage);
+        } catch (error) {
+            console.error('Error processing cover page:', error);
+            return res.status(500).send('Error processing cover page');
+        }
+        
+        for (const url of pdfUrls) {
+            try {
+              const pdfBuffer = await fetchPdf(url);
+              const pdfToMerge = await PDFDocument.load(pdfBuffer);
+              const pages = await mergedPdf.copyPages(pdfToMerge, pdfToMerge.getPageIndices());
+              pages.forEach(page => mergedPdf.addPage(page));
+            } catch (error) {
+              console.error(`Error processing PDF at ${url}:`, error);
+              // Continue with the next PDF instead of stopping the entire process
+            }
+        }
+
+        // Finalize and send the merged PDF
+        const pdfBytes = await mergedPdf.save();
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=combined.pdf');
+        res.send(Buffer.from(pdfBytes));
+    } catch (error) {
+        console.error('Error combining PDFs:', error);
+        res.status(500).send('Error combining PDFs');
+    }
+})
+
 
 app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
