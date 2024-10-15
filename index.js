@@ -294,7 +294,6 @@ app.post('/combine-pdfsv2', async (req, res) => {
     try {
         const mergedPdf = await PDFDocument.create();
 
-        // Fetch and add the cover page
         try {
             const coverPageResponse = await fetch(coverPageUrl);
             if (!coverPageResponse.ok) {
@@ -314,13 +313,11 @@ app.post('/combine-pdfsv2', async (req, res) => {
                 const pdfResponse = await fetch(url);
                 if (!pdfResponse.ok) {
                     console.error(`Failed to fetch PDF from ${url}: Status ${pdfResponse.status}`);
-                    continue;  // Skip this PDF if the fetch failed
                 }
         
                 const pdfBuffer = await pdfResponse.arrayBuffer();
                 if (!pdfBuffer) {
                     console.error(`Empty buffer received from ${url}`);
-                    continue;  // Skip if the buffer is empty
                 }
         
                 const pdfToMerge = await PDFDocument.load(pdfBuffer);
@@ -328,7 +325,6 @@ app.post('/combine-pdfsv2', async (req, res) => {
                 pages.forEach(page => mergedPdf.addPage(page));
             } catch (error) {
                 console.error(`Error processing PDF at ${url}:`, error);
-                // Skip the PDF on error and continue to the next one
                 continue;
             }
         }
