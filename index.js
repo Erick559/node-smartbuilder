@@ -311,13 +311,26 @@ app.post('/combine-pdfsv2', async (req, res) => {
         
         for (const url of pdfUrls) {
             try {
-              const pdfBuffer = await fetch(url);
-              const pdfToMerge = await PDFDocument.load(pdfBuffer);
-              const pages = await mergedPdf.copyPages(pdfToMerge, pdfToMerge.getPageIndices());
-              pages.forEach(page => mergedPdf.addPage(page));
+                console.log(`Fetching PDF from: ${url}`);
+                const pdfResponse = await fetch(url);
+                if (!pdfResponse.ok) {
+                    console.error(`Failed to fetch PDF from ${url}: Status ${pdfResponse.status}`);
+                    continue;  // Skip this PDF if the fetch failed
+                }
+        
+                const pdfBuffer = await pdfResponse.arrayBuffer();
+                if (!pdfBuffer) {
+                    console.error(`Empty buffer received from ${url}`);
+                    continue;  // Skip if the buffer is empty
+                }
+        
+                const pdfToMerge = await PDFDocument.load(pdfBuffer);
+                const pages = await mergedPdf.copyPages(pdfToMerge, pdfToMerge.getPageIndices());
+                pages.forEach(page => mergedPdf.addPage(page));
             } catch (error) {
-              console.error(`Error processing PDF at ${url}:`, error);
-              // Continue with the next PDF instead of stopping the entire process
+                console.error(`Error processing PDF at ${url}:`, error);
+                // Skip the PDF on error and continue to the next one
+                continue;
             }
         }
 
