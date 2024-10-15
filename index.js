@@ -311,7 +311,6 @@ app.post('/combine-pdfsv2', async (req, res) => {
         
         for (const url of pdfUrls) {
             try {
-                console.log(`Fetching PDF from: ${url}`);
                 const pdfResponse = await fetch(url);
                 if (!pdfResponse.ok) {
                     console.error(`Failed to fetch PDF from ${url}: Status ${pdfResponse.status}`);
